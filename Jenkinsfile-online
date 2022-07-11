@@ -20,13 +20,13 @@ pipeline {
     }
 
     stages {
-        stage ('checkout scm') {
+        stage ('拉取源码') {
             steps {
                 checkout(scm)
             }
         }
 
-        stage ('unit test') {
+        stage ('单元测试') {
             steps {
                 container ('maven') {
                     sh 'mvn clean test'
@@ -34,7 +34,7 @@ pipeline {
             }
         }
  
-        stage ('build & push') {
+        stage ('编译和推送镜像') {
             steps {
                 container ('maven') {
                     sh 'mvn clean package -DskipTests'
@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('push latest'){
+        stage('推送最新镜像'){
            when{
              branch 'master'
            }
@@ -59,7 +59,7 @@ pipeline {
            }
         }
 
-        stage('deploy to dev') {
+        stage('发布到dev环境') {
           when{
             branch 'master'
           }
@@ -76,7 +76,7 @@ pipeline {
             }
           }
         }
-        stage('push with tag'){
+        stage('带tag推送镜像'){
           when{
             expression{
               return params.TAG_NAME =~ /v.*/
@@ -96,7 +96,7 @@ pipeline {
           }
           }
         }
-        stage('deploy to production') {
+        stage('发布到prod环境') {
           when{
             expression{
               return params.TAG_NAME =~ /v.*/
